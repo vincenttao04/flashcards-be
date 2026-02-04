@@ -1,4 +1,5 @@
 import express from "express";
+import prisma from "./prisma";
 
 const app = express();
 
@@ -8,8 +9,9 @@ app.get("/health", (_req, res) => {
   res.json({ status: "ok" });
 });
 
-app.get("/test-db", (_req, res) => {
-  
+app.get("/test-db", async (_req, res) => {
+  const cards = await prisma.flashcard.findMany();
+  res.json(cards);
 });
 
 app.listen(3000, () => {

@@ -1,12 +1,12 @@
-# dependencies
-node_modules/
+node_modules
+# Keep environment variables out of version control
+.env
+.env.*
+
+/generated/prisma
 
 # build output
 dist/
-
-# env files
-.env
-.env.*
 
 # logs
 npm-debug.log*
@@ -15,5 +15,3 @@ yarn-error.log*
 
 # OS
 .DS_Store
-
-/src/generated/prisma
