@@ -20,9 +20,11 @@
   },
   "homepage": "https://github.com/vincenttao04/flashcards-be#readme",
   "dependencies": {
+    "@prisma/client": "^7.3.0",
     "cors": "^2.8.6",
     "dotenv": "^17.2.3",
-    "express": "^5.2.1"
+    "express": "^5.2.1",
+    "prisma": "^7.3.0"
   },
   "devDependencies": {
     "@types/express": "^5.0.6",
