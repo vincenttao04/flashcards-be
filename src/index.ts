@@ -23,6 +23,14 @@ app.use("/decks", decksRouter);
 
 app.use("/", cardsRouter);
 
+app.use((err: any, _req: any, res: any, _next: any) => {
+  console.error(err);
+
+  res.status(500).json({
+    error: "Internal server error",
+  });
+});
+
 app.listen(3000, () => {
   console.log("🚀 Server running on http://localhost:3000");
 });
