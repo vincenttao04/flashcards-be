@@ -1,6 +1,6 @@
 // src/routes/debug.ts
-import prisma from "../prisma";
 import { Router } from "express";
+import prisma from "../prisma";
 
 const router = Router();
 

@@ -1,6 +1,7 @@
 import express from "express";
 import prisma from "./prisma";
-import router from "./routes/debug";
+import debugRouter from "./routes/debug";
+import deckRouter from "./routes/decks";
 
 const app = express();
 
@@ -15,7 +16,9 @@ app.get("/test-db", async (_req, res) => {
   res.json(cards);
 });
 
-app.use("/debug", router);
+app.use("/debug", debugRouter);
+
+app.use("/decks", deckRouter);
 
 app.listen(3000, () => {
   console.log("🚀 Server running on http://localhost:3000");
