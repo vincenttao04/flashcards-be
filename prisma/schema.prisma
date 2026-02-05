@@ -1,26 +1,27 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
-<<<<<<< HEAD
 generator client {
   provider = "prisma-client"
   output   = "../generated/prisma"
-=======
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
-generator client {
-  provider = "prisma-client-js"
->>>>>>> main
 }
 
 datasource db {
   provider = "sqlite"
 }
 
-model Flashcard {
+model Deck {
+  id        Int      @id @default(autoincrement())
+  name      String
+  createdAt DateTime @default(now())
+  cards     Card[]
+}
+
+model Card {
   id        Int      @id @default(autoincrement())
   question  String
   answer    String
+  deckId    Int
+  deck      Deck     @relation(fields: [deckId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
 }
