@@ -8,7 +8,7 @@ router.post("/", async (req, res) => {
   const { name } = req.body;
 
   if (!name) {
-    return res.status(400).json({ error: "Deck name is required" });
+    return res.status(400).json({ error: "Deck name required" });
   }
 
   const deck = await prisma.deck.create({
@@ -21,6 +21,7 @@ router.post("/", async (req, res) => {
 // READ all decks
 router.get("/", async (req, res) => {
   const decks = await prisma.deck.findMany({ orderBy: { createdAt: "desc" } });
+
   res.json(decks);
 });
 
@@ -44,6 +45,10 @@ router.get("/:id", async (req, res) => {
 router.put("/:id", async (req, res) => {
   const id = Number(req.params.id);
   const { name } = req.body;
+
+  if (!name) {
+    return res.status(400).json({ error: "Deck name required" });
+  }
 
   const deck = await prisma.deck.update({
     where: { id },
