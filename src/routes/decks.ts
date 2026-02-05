@@ -19,7 +19,7 @@ router.post("/", async (req, res) => {
 });
 
 // READ all decks
-router.get("/", async (req, res) => {
+router.get("/", async (_req, res) => {
   const decks = await prisma.deck.findMany({ orderBy: { createdAt: "desc" } });
 
   res.json(decks);

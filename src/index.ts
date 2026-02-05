@@ -12,10 +12,10 @@ app.get("/health", (_req, res) => {
   res.json({ status: "ok" });
 });
 
-app.get("/test-db", async (_req, res) => {
-  const cards = await prisma.flashcard.findMany();
-  res.json(cards);
-});
+// app.get("/test-db", async (_req, res) => {
+//   const cards = await prisma.flashcard.findMany();
+//   res.json(cards);
+// });
 
 app.use("/debug", debugRouter);
 
