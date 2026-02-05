@@ -10,3 +10,4 @@ setup instructions:
 `npx prisma migrate dev --name [name]`
 
 `npx prisma format` - for auto formatting of schema.prisma file
+`npx prisma migrate reset` - to clear/reset migration.sql
