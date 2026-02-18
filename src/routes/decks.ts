@@ -5,18 +5,17 @@ const router = Router();
 
 // CREATE a deck
 router.post("/", async (req, res) => {
-  const { name } = req.body;
-  const { description } = req.body;
+  const { title, description } = req.body;
 
-  if (!name) {
-    return res.status(400).json({ error: "Deck name required" });
+  if (!title) {
+    return res.status(400).json({ error: "Deck title required" });
   }
   if (!description) {
     return res.status(400).json({ error: "Deck description required" });
   }
 
   const deck = await prisma.deck.create({
-    data: { name },
+    data: { title, description },
   });
 
   res.status(201).json(deck);
@@ -48,15 +47,15 @@ router.get("/:id", async (req, res) => {
 // UPDATE a deck
 router.put("/:id", async (req, res) => {
   const id = Number(req.params.id);
-  const { name } = req.body;
+  const { title } = req.body;
 
-  if (!name) {
-    return res.status(400).json({ error: "Deck name required" });
+  if (!title) {
+    return res.status(400).json({ error: "Deck title required" });
   }
 
   const deck = await prisma.deck.update({
     where: { id },
-    data: { name },
+    data: { title },
   });
 
   res.json(deck);

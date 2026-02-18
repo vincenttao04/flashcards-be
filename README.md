@@ -20,3 +20,4 @@ manual nuke
 
 - Only use this when: you don’t care about data, you want a fresh history, early-stage dev / learning
 - Steps: Delete `prisma/migrations/`, Delete `prisma/dev.db`, run a new migration command
+- (maybe) needs a `npx prisma generate`
