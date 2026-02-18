@@ -11,10 +11,11 @@ datasource db {
 }
 
 model Deck {
-  id        Int      @id @default(autoincrement())
-  name      String
-  createdAt DateTime @default(now())
-  cards     Card[]
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String
+  createdAt   DateTime @default(now())
+  cards       Card[]
 }
 
 model Card {

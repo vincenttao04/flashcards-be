@@ -6,9 +6,13 @@ const router = Router();
 // CREATE a deck
 router.post("/", async (req, res) => {
   const { name } = req.body;
+  const { description } = req.body;
 
   if (!name) {
     return res.status(400).json({ error: "Deck name required" });
+  }
+  if (!description) {
+    return res.status(400).json({ error: "Deck description required" });
   }
 
   const deck = await prisma.deck.create({
