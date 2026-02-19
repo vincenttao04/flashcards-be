@@ -47,18 +47,28 @@ router.get("/:id", async (req, res) => {
 // UPDATE a deck
 router.put("/:id", async (req, res) => {
   const id = Number(req.params.id);
-  const { title } = req.body;
+  const { title, description } = req.body;
 
-  if (!title) {
-    return res.status(400).json({ error: "Deck title required" });
+  if (Number.isNaN(id)) {
+    return res.status(400).json({ error: "Invalid deck ID" });
   }
 
-  const deck = await prisma.deck.update({
-    where: { id },
-    data: { title },
-  });
+  if (!title || !description) {
+    return res
+      .status(400)
+      .json({ error: "Deck title and description required" });
+  }
 
-  res.json(deck);
+  try {
+    const deck = await prisma.deck.update({
+      where: { id },
+      data: { title, description },
+    });
+
+    res.json(deck);
+  } catch (error) {
+    res.status(404).json({ error: "Deck not found" });
+  }
 });
 
 // DELETE a deck
