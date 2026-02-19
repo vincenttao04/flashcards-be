@@ -65,11 +65,19 @@ router.put("/:id", async (req, res) => {
 router.delete("/:id", async (req, res) => {
   const id = Number(req.params.id);
 
-  await prisma.deck.delete({
-    where: { id },
-  });
+  if (Number.isNaN(id)) {
+    return res.status(400).json({ error: "Invalid deck ID" });
+  }
 
-  res.status(204).send();
+  try {
+    await prisma.deck.delete({
+      where: { id },
+    });
+
+    res.status(204).send();
+  } catch (error) {
+    res.status(404).json({ error: "Deck not found" });
+  }
 });
 
 export default router;
