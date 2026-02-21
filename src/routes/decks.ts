@@ -5,12 +5,14 @@ const router = Router();
 
 // CREATE a deck
 router.post("/", async (req, res) => {
-  const { title, description } = req.body;
+  const { title, description, cards } = req.body;
 
-  if (typeof title !== "string" || typeof description !== "string") {
-    return res
-      .status(400)
-      .json({ error: "Deck title/description invalid format" });
+  if (
+    typeof title !== "string" ||
+    typeof description !== "string" ||
+    !Array.isArray(cards)
+  ) {
+    return res.status(400).json({ error: "Invalid input format" });
   }
 
   const cleanTitle = title.trim();
@@ -20,9 +22,41 @@ router.post("/", async (req, res) => {
     return res.status(400).json({ error: "Deck title/description required" });
   }
 
+  if (cards.length === 0) {
+    return res.status(400).json({ error: "At least one card is required" });
+  }
+
+  const cleanCards = [];
+  for (const card of cards) {
+    if (
+      typeof card !== "object" ||
+      card === null ||
+      typeof card.question !== "string" ||
+      typeof card.answer !== "string"
+    ) {
+      return res.status(400).json({ error: "Invalid card format" });
+    }
+
+    const question = card.question.trim();
+    const answer = card.answer.trim();
+
+    if (!question || !answer) {
+      return res.status(400).json({ error: "Card question/answer required" });
+    }
+
+    cleanCards.push({ question, answer });
+  }
+
   try {
     const deck = await prisma.deck.create({
-      data: { title: cleanTitle, description: cleanDescription },
+      data: {
+        title: cleanTitle,
+        description: cleanDescription,
+        cards: {
+          create: cleanCards,
+        },
+      },
+      include: { cards: true },
     });
 
     res.status(201).json(deck);
