@@ -70,6 +70,7 @@ router.get("/", async (_req, res) => {
   try {
     const decks = await prisma.deck.findMany({
       orderBy: { createdAt: "desc" },
+      include: { cards: true },
     });
 
     res.json(decks);
