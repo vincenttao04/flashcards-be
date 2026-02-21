@@ -5,22 +5,24 @@ const router = Router();
 
 // CREATE a deck
 router.post("/", async (req, res) => {
-  const { rawTitle, rawDescription } = req.body;
-  const title = rawTitle?.trim();
-  const description = rawDescription?.trim();
+  const { title, description } = req.body;
 
-  if (
-    typeof title !== "string" ||
-    typeof description !== "string" ||
-    !title.trim() ||
-    !description.trim()
-  ) {
+  if (typeof title !== "string" || typeof description !== "string") {
+    return res
+      .status(400)
+      .json({ error: "Deck title/description invalid format" });
+  }
+
+  const cleanTitle = title.trim();
+  const cleanDescription = description.trim();
+
+  if (!cleanTitle || !cleanDescription) {
     return res.status(400).json({ error: "Deck title/description required" });
   }
 
   try {
     const deck = await prisma.deck.create({
-      data: { title, description },
+      data: { title: cleanTitle, description: cleanDescription },
     });
 
     res.status(201).json(deck);
@@ -69,27 +71,29 @@ router.get("/:id", async (req, res) => {
 // UPDATE a deck
 router.put("/:id", async (req, res) => {
   const id = Number(req.params.id);
-  const { rawTitle, rawDescription } = req.body;
-  const title = rawTitle?.trim();
-  const description = rawDescription?.trim();
+  const { title, description } = req.body;
 
   if (Number.isNaN(id)) {
     return res.status(400).json({ error: "Invalid deck ID" });
   }
 
-  if (
-    typeof title !== "string" ||
-    typeof description !== "string" ||
-    !title.trim() ||
-    !description.trim()
-  ) {
+  if (typeof title !== "string" || typeof description !== "string") {
+    return res
+      .status(400)
+      .json({ error: "Deck title/description invalid format" });
+  }
+
+  const cleanTitle = title.trim();
+  const cleanDescription = description.trim();
+
+  if (!cleanTitle || !cleanDescription) {
     return res.status(400).json({ error: "Deck title/description required" });
   }
 
   try {
     const deck = await prisma.deck.update({
       where: { id },
-      data: { title, description },
+      data: { title: cleanTitle, description: cleanDescription },
     });
 
     res.json(deck);
