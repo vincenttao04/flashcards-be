@@ -5,72 +5,128 @@ const router = Router();
 
 // CREATE a deck
 router.post("/", async (req, res) => {
-  const { name } = req.body;
-  const { description } = req.body;
+  const { title, description } = req.body;
 
-  if (!name) {
-    return res.status(400).json({ error: "Deck name required" });
-  }
-  if (!description) {
-    return res.status(400).json({ error: "Deck description required" });
+  if (typeof title !== "string" || typeof description !== "string") {
+    return res
+      .status(400)
+      .json({ error: "Deck title/description invalid format" });
   }
 
-  const deck = await prisma.deck.create({
-    data: { name },
-  });
+  const cleanTitle = title.trim();
+  const cleanDescription = description.trim();
 
-  res.status(201).json(deck);
+  if (!cleanTitle || !cleanDescription) {
+    return res.status(400).json({ error: "Deck title/description required" });
+  }
+
+  try {
+    const deck = await prisma.deck.create({
+      data: { title: cleanTitle, description: cleanDescription },
+    });
+
+    res.status(201).json(deck);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to create deck" });
+  }
 });
 
 // READ all decks
 router.get("/", async (_req, res) => {
-  const decks = await prisma.deck.findMany({ orderBy: { createdAt: "desc" } });
+  try {
+    const decks = await prisma.deck.findMany({
+      orderBy: { createdAt: "desc" },
+    });
 
-  res.json(decks);
+    res.json(decks);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to fetch decks" });
+  }
 });
 
 // READ a deck
 router.get("/:id", async (req, res) => {
   const id = Number(req.params.id);
 
-  const deck = await prisma.deck.findUnique({
-    where: { id },
-    include: { cards: true },
-  });
-
-  if (!deck) {
-    return res.status(404).json({ error: "Deck not found" });
+  if (Number.isNaN(id)) {
+    return res.status(400).json({ error: "Invalid deck ID" });
   }
 
-  res.json(deck);
+  try {
+    const deck = await prisma.deck.findUnique({
+      where: { id },
+      include: { cards: true },
+    });
+
+    if (!deck) {
+      return res.status(404).json({ error: "Deck not found" });
+    }
+
+    res.json(deck);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to fetch deck" });
+  }
 });
 
 // UPDATE a deck
 router.put("/:id", async (req, res) => {
   const id = Number(req.params.id);
-  const { name } = req.body;
+  const { title, description } = req.body;
 
-  if (!name) {
-    return res.status(400).json({ error: "Deck name required" });
+  if (Number.isNaN(id)) {
+    return res.status(400).json({ error: "Invalid deck ID" });
   }
 
-  const deck = await prisma.deck.update({
-    where: { id },
-    data: { name },
-  });
+  if (typeof title !== "string" || typeof description !== "string") {
+    return res
+      .status(400)
+      .json({ error: "Deck title/description invalid format" });
+  }
 
-  res.json(deck);
+  const cleanTitle = title.trim();
+  const cleanDescription = description.trim();
+
+  if (!cleanTitle || !cleanDescription) {
+    return res.status(400).json({ error: "Deck title/description required" });
+  }
+
+  try {
+    const deck = await prisma.deck.update({
+      where: { id },
+      data: { title: cleanTitle, description: cleanDescription },
+    });
+
+    res.json(deck);
+  } catch (error: any) {
+    if (error.code === "P2025") {
+      return res.status(404).json({ error: "Deck not found" });
+    }
+
+    res.status(500).json({ error: "Failed to update deck" });
+  }
 });
 
 // DELETE a deck
 router.delete("/:id", async (req, res) => {
   const id = Number(req.params.id);
 
-  await prisma.deck.delete({
-    where: { id },
-  });
+  if (Number.isNaN(id)) {
+    return res.status(400).json({ error: "Invalid deck ID" });
+  }
 
-  res.status(204).send();
+  try {
+    await prisma.deck.delete({
+      where: { id },
+    });
+
+    res.status(204).send();
+  } catch (error: any) {
+    if (error.code === "P2025") {
+      return res.status(404).json({ error: "Deck not found" });
+    }
+
+    res.status(500).json({ error: "Failed to delete deck" });
+  }
 });
 
 export default router;
