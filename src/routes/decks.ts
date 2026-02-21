@@ -5,58 +5,85 @@ const router = Router();
 
 // CREATE a deck
 router.post("/", async (req, res) => {
-  const { title, description } = req.body;
+  const { rawTitle, rawDescription } = req.body;
+  const title = rawTitle?.trim();
+  const description = rawDescription?.trim();
 
-  if (!title) {
-    return res.status(400).json({ error: "Deck title required" });
+  if (
+    typeof title !== "string" ||
+    typeof description !== "string" ||
+    !title.trim() ||
+    !description.trim()
+  ) {
+    return res.status(400).json({ error: "Deck title/description required" });
   }
-  if (!description) {
-    return res.status(400).json({ error: "Deck description required" });
+
+  try {
+    const deck = await prisma.deck.create({
+      data: { title, description },
+    });
+
+    res.status(201).json(deck);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to create deck" });
   }
-
-  const deck = await prisma.deck.create({
-    data: { title, description },
-  });
-
-  res.status(201).json(deck);
 });
 
 // READ all decks
 router.get("/", async (_req, res) => {
-  const decks = await prisma.deck.findMany({ orderBy: { createdAt: "desc" } });
+  try {
+    const decks = await prisma.deck.findMany({
+      orderBy: { createdAt: "desc" },
+    });
 
-  res.json(decks);
+    res.json(decks);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to fetch decks" });
+  }
 });
 
 // READ a deck
 router.get("/:id", async (req, res) => {
   const id = Number(req.params.id);
 
-  const deck = await prisma.deck.findUnique({
-    where: { id },
-    include: { cards: true },
-  });
-
-  if (!deck) {
-    return res.status(404).json({ error: "Deck not found" });
+  if (Number.isNaN(id)) {
+    return res.status(400).json({ error: "Invalid deck ID" });
   }
 
-  res.json(deck);
+  try {
+    const deck = await prisma.deck.findUnique({
+      where: { id },
+      include: { cards: true },
+    });
+
+    if (!deck) {
+      return res.status(404).json({ error: "Deck not found" });
+    }
+
+    res.json(deck);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to fetch deck" });
+  }
 });
 
 // UPDATE a deck
 router.put("/:id", async (req, res) => {
   const id = Number(req.params.id);
-  const { title, description } = req.body;
+  const { rawTitle, rawDescription } = req.body;
+  const title = rawTitle?.trim();
+  const description = rawDescription?.trim();
 
   if (Number.isNaN(id)) {
     return res.status(400).json({ error: "Invalid deck ID" });
   }
 
-  if (!title || !description) {
-    return res
-      .status(400)
-      .json({ error: "Deck title and description required" });
+  if (
+    typeof title !== "string" ||
+    typeof description !== "string" ||
+    !title.trim() ||
+    !description.trim()
+  ) {
+    return res.status(400).json({ error: "Deck title/description required" });
   }
 
   try {
@@ -66,8 +93,12 @@ router.put("/:id", async (req, res) => {
     });
 
     res.json(deck);
-  } catch (error) {
-    res.status(404).json({ error: "Deck not found" });
+  } catch (error: any) {
+    if (error.code === "P2025") {
+      return res.status(404).json({ error: "Deck not found" });
+    }
+
+    res.status(500).json({ error: "Failed to update deck" });
   }
 });
 
@@ -85,8 +116,12 @@ router.delete("/:id", async (req, res) => {
     });
 
     res.status(204).send();
-  } catch (error) {
-    res.status(404).json({ error: "Deck not found" });
+  } catch (error: any) {
+    if (error.code === "P2025") {
+      return res.status(404).json({ error: "Deck not found" });
+    }
+
+    res.status(500).json({ error: "Failed to delete deck" });
   }
 });
 
