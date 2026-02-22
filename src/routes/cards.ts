@@ -8,6 +8,10 @@ router.post("/decks/:deckId/cards", async (req, res) => {
   const deckId = Number(req.params.deckId);
   const { question, answer } = req.body;
 
+  if (Number.isNaN(deckId)) {
+    return res.status(400).json({ error: "Invalid deck ID" });
+  }
+
   if (typeof question !== "string" || typeof answer !== "string") {
     return res.status(400).json({ error: "Invalid input format" });
   }
@@ -29,7 +33,11 @@ router.post("/decks/:deckId/cards", async (req, res) => {
     });
 
     res.status(201).json(card);
-  } catch (error) {
+  } catch (error: any) {
+    if (error.code === "P2003") {
+      return res.status(404).json({ error: "Deck not found" });
+    }
+
     res.status(500).json({ error: "Failed to create card" });
   }
 });
@@ -59,6 +67,10 @@ router.put("/cards/:id", async (req, res) => {
   const id = Number(req.params.id);
   const { question, answer } = req.body;
 
+  if (Number.isNaN(id)) {
+    return res.status(400).json({ error: "Invalid card ID" });
+  }
+
   if (typeof question !== "string" || typeof answer !== "string") {
     return res.status(400).json({ error: "Invalid input format" });
   }
@@ -77,7 +89,11 @@ router.put("/cards/:id", async (req, res) => {
     });
 
     res.json(card);
-  } catch (error) {
+  } catch (error: any) {
+    if (error.code === "P2025") {
+      return res.status(404).json({ error: "Card not found" });
+    }
+
     res.status(500).json({ error: "Failed to update card" });
   }
 });
@@ -96,7 +112,11 @@ router.delete("/cards/:id", async (req, res) => {
     });
 
     res.status(204).send();
-  } catch (error) {
+  } catch (error: any) {
+    if (error.code === "P2025") {
+      return res.status(404).json({ error: "Card not found" });
+    }
+
     res.status(500).json({ error: "Failed to delete card" });
   }
 });
