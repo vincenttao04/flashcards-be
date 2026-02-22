@@ -3,6 +3,21 @@ import prisma from "../prisma";
 
 const router = Router();
 
+/**
+ * @remarks
+ * This module provides CRUD endpoints for individual card operations.
+ * However, these endpoints are currently NOT actively used in the frontend UI.
+ *
+ * The frontend implements a bulk update pattern where users update entire
+ * deck and card models simultaneously rather than modifying individual cards.
+ * This means the PUT and DELETE endpoints in this file are deprecated in favor
+ * of deck-level batch operations.
+ *
+ * However, these endpoints remain functional for potential future use or
+ * alternative client implementations.
+ *
+ */
+
 // CREATE a card
 router.post("/decks/:deckId/cards", async (req, res) => {
   const deckId = Number(req.params.deckId);
