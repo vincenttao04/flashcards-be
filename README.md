@@ -1,4 +1,4 @@
-# flashcards-be
+# Flashcards (Backend)
 
 A RESTful API backend for the Flashcards application, built to power the Vue 3 frontend client ([flashcards-fe](https://github.com/vincenttao04/flashcards-fe)).
 

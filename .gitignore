@@ -15,3 +15,8 @@ yarn-error.log*
 
 # OS
 .DS_Store
+
+# Database files
+dev.db
+*.sqlite
+*.db
