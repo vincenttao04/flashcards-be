@@ -4,26 +4,28 @@ A RESTful API backend for the Flashcards application, built to power the Vue 3 f
 
 This personal project extends the frontend into a fully functional full-stack application, focusing on clean architecture, scalable CRUD operations, and robust relational data modelling.
 
-- [flashcards-be](#flashcards-be)
-  - [Tech Stack](#tech-stack)
-  - [Project Structure](#project-structure)
-  - [Data Models](#data-models)
-    - [`Deck`](#deck)
-    - [`Card`](#card)
-  - [API Endpoints](#api-endpoints)
-    - [Decks — `/decks`](#decks--decks)
-      - [Request Body — `POST` and `PUT /decks`](#request-body--post-and-put-decks)
-    - [Cards — `/decks/:deckId/cards`, `/cards/:id`](#cards--decksdeckidcards-cardsid)
-    - [Debug — `/debug`](#debug--debug)
-  - [Getting Started](#getting-started)
-    - [Prerequisites](#prerequisites)
-    - [Installation](#installation)
-    - [Environment](#environment)
-    - [Database Setup](#database-setup)
-    - [Running the Dev Server](#running-the-dev-server)
-  - [Prisma Reference](#prisma-reference)
-    - [Manual Reset (Fresh Start)](#manual-reset-fresh-start)
-  - [Configuration](#configuration)
+- [Tech Stack](#tech-stack)
+- [Project Structure](#project-structure)
+- [Data Models](#data-models)
+  - [`Deck`](#deck)
+  - [`Card`](#card)
+- [API Endpoints](#api-endpoints)
+  - [Decks - `/decks`](#decks---decks)
+    - [Request Body - `POST` and `PUT /decks`](#request-body---post-and-put-decks)
+  - [Cards - `/decks/:deckId/cards`, `/cards/:id`](#cards---decksdeckidcards-cardsid)
+  - [Debug - `/debug`](#debug---debug)
+- [Getting Started](#getting-started)
+  - [Prerequisites](#prerequisites)
+  - [Installation](#installation)
+  - [Environment](#environment)
+  - [Database Setup](#database-setup)
+  - [Running the Dev Server](#running-the-dev-server)
+- [Prisma Reference](#prisma-reference)
+  - [Manual Reset (Fresh Start)](#manual-reset-fresh-start)
+- [Configuration](#configuration)
+- [Future Work](#future-work)
+- [License](#license)
+- [Author](#author)
 
 ## Tech Stack
 
@@ -82,7 +84,7 @@ Deleting a `Deck` cascades to all of its `Card` records.
 
 ## API Endpoints
 
-### Decks — `/decks`
+### Decks - `/decks`
 
 | Method   | Path         | Description                                        |
 | -------- | ------------ | -------------------------------------------------- |
@@ -94,9 +96,9 @@ Deleting a `Deck` cascades to all of its `Card` records.
 
 All deck responses include the nested `cards` array.
 
-The `PUT /decks/:id` update uses a **bulk replace** pattern — all existing cards are deleted and recreated from the request body. This aligns with how the frontend manages deck edits.
+The `PUT /decks/:id` update uses a **bulk replace** pattern - all existing cards are deleted and recreated from the request body. This aligns with how the frontend manages deck edits.
 
-#### Request Body — `POST` and `PUT /decks`
+#### Request Body - `POST` and `PUT /decks`
 
 ```json
 {
@@ -106,7 +108,7 @@ The `PUT /decks/:id` update uses a **bulk replace** pattern — all existing car
 }
 ```
 
-### Cards — `/decks/:deckId/cards`, `/cards/:id`
+### Cards - `/decks/:deckId/cards`, `/cards/:id`
 
 > **Note:** These endpoints are functional but not actively used by the frontend, which manages cards through deck-level bulk operations instead.
 
@@ -117,7 +119,7 @@ The `PUT /decks/:id` update uses a **bulk replace** pattern — all existing car
 | `PUT`    | `/cards/:id`           | Update a single card's question/answer |
 | `DELETE` | `/cards/:id`           | Delete a single card                   |
 
-### Debug — `/debug`
+### Debug - `/debug`
 
 | Method | Path        | Description                                              |
 | ------ | ----------- | -------------------------------------------------------- |
@@ -171,7 +173,7 @@ npx prisma migrate dev --name <name>
 # Format schema.prisma
 npx prisma format
 
-# Reset DB — drops, remigrates, regenerates client
+# Reset DB - drops, remigrates, regenerates client
 npx prisma migrate reset
 ```
 
@@ -186,11 +188,19 @@ Only use this when you want to discard all migration history:
 
 ## Configuration
 
-**`tsconfig.json`** — targets ES2023, uses `bundler` module resolution, strict mode enabled. `ignoreDeprecations: "5.0"` is required to match the installed TypeScript version.
+**`tsconfig.json`** - Targets ES2023, uses `bundler` module resolution, strict mode enabled. `ignoreDeprecations: "5.0"` is required to match the installed TypeScript version.
 
-**`prisma.config.ts`** — points Prisma CLI to `prisma/schema.prisma` and reads `DATABASE_URL` from environment.
+**`prisma.config.ts`** - Points Prisma CLI to `prisma/schema.prisma` and reads `DATABASE_URL` from environment.
 
-**`src/prisma.ts`** — instantiates a single `PrismaClient` using the `better-sqlite3` adapter, shared across all route handlers.
+**`src/prisma.ts`** - Instantiates a single `PrismaClient` using the `better-sqlite3` adapter, shared across all route handlers.
+
+## Future Work
+
+- **Card ordering** - Cards are currently sorted by `createdAt desc` only; support manual reordering via an `order` field on the `Card` model.
+- **User accounts** - The API has no ownership model; all decks are globally readable and writable; adding a `User` model with a `userId` FK on `Deck` would scope data per user.
+- **JWT / session-based auth** - Complement user accounts with an auth middleware layer (e.g. `jsonwebtoken` or `express-session`) to protect routes and identify the requesting user.
+- **Pagination on `GET /decks`** - Currently returns all decks in one response; add `page`/`limit` query params to support larger datasets.
+- **Tests** - No test coverage exists; integration tests against the SQLite DB (e.g. with `vitest` + `supertest`) would cover the core CRUD flows.
 
 ## License
 
